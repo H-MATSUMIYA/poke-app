@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary-50: #fef2f2;
+  --color-primary-100: #fee2e2;
+  --color-primary-500: #ef4444;
+  --color-primary-600: #dc2626;
+  --font-family-sans: "Inter", "Helvetica Neue", "Arial", sans-serif;
+}
+
+@layer base {
+  html, body {
+    @apply antialiased min-h-screen bg-slate-50 text-slate-900 transition-colors duration-200;
+  }
+  
+  .dark body {
+    @apply bg-slate-900 text-slate-100;
+  }
+}
