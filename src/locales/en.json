@@ -6,6 +6,8 @@
     "all_generations": "All Generations",
     "generation_label": "Generation",
     "generation": "Generation {{n}}",
+    "legends_arceus": "Legends: Arceus",
+    "type_label": "Type",
     "found_count": "Found {{count}} Pokémon",
     "no_pokemon": "No Pokémon found matching your criteria.",
     "back": "Back to Pokédex",

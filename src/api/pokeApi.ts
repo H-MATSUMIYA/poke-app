@@ -31,3 +31,22 @@ export const fetchPokemonSpecies = async (nameOrId: string | number): Promise<Po
   if (!res.ok) throw new Error(`Failed to fetch species for ${nameOrId}`);
   return res.json();
 };
+
+/**
+ * URLを指定して種族データを取得する（フォルム違いの取得404エラー回避用）
+ */
+export const fetchSpeciesByUrl = async (url: string): Promise<PokemonSpecies> => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch species from ${url}`);
+  return res.json();
+};
+
+/**
+ * 日本語検索用：全ポケモンの多言語名マッピングは外部アセットがないため、
+ * 日本語版の種族リストをバッチ取得して構築するための型定義
+ */
+export interface LocalizedName {
+  id: number;
+  en: string;
+  ja: string;
+}

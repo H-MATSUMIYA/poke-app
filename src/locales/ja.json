@@ -6,6 +6,8 @@
     "all_generations": "全世代",
     "generation_label": "世代",
     "generation": "第{{n}}世代",
+    "legends_arceus": "LEGENDS アルセウス",
+    "type_label": "タイプ",
     "found_count": "{{count}}匹のポケモンが見つかりました",
     "no_pokemon": "条件に合うポケモンが見つかりませんでした。",
     "back": "図鑑一覧に戻る",

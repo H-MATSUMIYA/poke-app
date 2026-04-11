@@ -6,9 +6,24 @@ import { FilterBar } from '../components/FilterBar';
 
 export const PokemonList = () => {
   const { t } = useTranslation();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
-  const [genFilter, setGenFilter] = useState('');
+
+  // 初期値としてsessionStorageから取得
+  const [searchTerm, setSearchTerm] = useState(() => sessionStorage.getItem('pokedex-search') || '');
+  const [typeFilter, setTypeFilter] = useState(() => sessionStorage.getItem('pokedex-type') || '');
+  const [genFilter, setGenFilter] = useState(() => sessionStorage.getItem('pokedex-gen') || '');
+
+  // フィルタが変更されるたびにsessionStorageを更新
+  useEffect(() => {
+    sessionStorage.setItem('pokedex-search', searchTerm);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    sessionStorage.setItem('pokedex-type', typeFilter);
+  }, [typeFilter]);
+
+  useEffect(() => {
+    sessionStorage.setItem('pokedex-gen', genFilter);
+  }, [genFilter]);
 
   const {
     data,
@@ -89,7 +104,7 @@ export const PokemonList = () => {
             ))}
           </div>
 
-          {data?.pages[0].data.length === 0 && (
+          {totalCount === 0 && (
             <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
               <p className="text-slate-500 dark:text-slate-400 text-lg">{t('common.no_pokemon')}</p>
             </div>

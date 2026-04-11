@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { fetchPokemonDetail, fetchPokemonSpecies } from '../api/pokeApi';
+import { fetchPokemonDetail, fetchSpeciesByUrl } from '../api/pokeApi';
 import { getTypeColor } from '../utils/typeColors';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,14 +12,18 @@ export const PokemonCard = ({ name }: PokemonCardProps) => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
+  // 1. ポケモン詳細データの取得
   const { data: pokemon, isLoading: isPokemonLoading, error: pokemonError } = useQuery({
     queryKey: ['pokemon', name],
     queryFn: () => fetchPokemonDetail(name),
   });
 
+  // 2. 詳細データの species.url を使って種族データを取得
+  // こうすることで、'zygarde-10' のようなフォルム名で 404 エラーになるのを防げる
   const { data: species, isLoading: isSpeciesLoading } = useQuery({
-    queryKey: ['species', name],
-    queryFn: () => fetchPokemonSpecies(name),
+    queryKey: ['species', pokemon?.species.url],
+    queryFn: () => fetchSpeciesByUrl(pokemon!.species.url),
+    enabled: !!pokemon?.species.url,
   });
 
   if (isPokemonLoading || isSpeciesLoading) {
