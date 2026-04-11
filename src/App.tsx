@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { PokemonList } from './pages/PokemonList';
 import { PokemonDetailScreen } from './pages/PokemonDetailScreen';
 import { ThemeSwitcher } from './components/ThemeSwitcher';
+import { LanguageSwitcher } from './components/LanguageSwitcher';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,7 +27,10 @@ function App() {
                 </div>
                 <h1 className="text-2xl font-bold tracking-wider">Pokédex</h1>
               </Link>
-              <ThemeSwitcher />
+              <div className="flex items-center gap-4">
+                <LanguageSwitcher />
+                <ThemeSwitcher />
+              </div>
             </div>
           </header>
           <main className="container mx-auto p-4 sm:p-6 lg:p-8">

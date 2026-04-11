@@ -51,11 +51,16 @@ export interface TypeResponse {
 export interface FlavorTextEntry {
   flavor_text: string;
   language: NamedAPIResource;
+  version: NamedAPIResource;
 }
 
 export interface PokemonSpecies {
   id: number;
   name: string;
+  names: {
+    name: string;
+    language: NamedAPIResource;
+  }[];
   genera: {
     genus: string;
     language: NamedAPIResource;

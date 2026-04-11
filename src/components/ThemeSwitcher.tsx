@@ -1,6 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../hooks/useTheme';
 
 export const ThemeSwitcher = () => {
+  const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
 
   return (
@@ -13,7 +15,7 @@ export const ThemeSwitcher = () => {
             : 'text-white/80 hover:bg-white/20 dark:hover:bg-slate-700'
         }`}
       >
-        Light
+        {t('theme.light')}
       </button>
       <button 
         onClick={() => setTheme('dark')}
@@ -23,7 +25,7 @@ export const ThemeSwitcher = () => {
             : 'text-white/80 hover:bg-white/20 dark:hover:bg-slate-700'
         }`}
       >
-        Dark
+        {t('theme.dark')}
       </button>
       <button 
         onClick={() => setTheme('system')}
@@ -33,7 +35,7 @@ export const ThemeSwitcher = () => {
             : 'text-white/80 hover:bg-white/20 dark:hover:bg-slate-700'
         }`}
       >
-        System
+        {t('theme.system')}
       </button>
     </div>
   );

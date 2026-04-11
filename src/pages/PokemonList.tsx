@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useFilteredPokemonList } from '../hooks/usePokemonList';
 import { PokemonCard } from '../components/PokemonCard';
 import { FilterBar } from '../components/FilterBar';
 
 export const PokemonList = () => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [genFilter, setGenFilter] = useState('');
@@ -30,6 +32,32 @@ export const PokemonList = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  // スクロール位置の復元と保存
+  useEffect(() => {
+    // 復元: データ読み込み完了後に実行
+    if (!isInitialLoading && data) {
+      const savedPos = sessionStorage.getItem('pokedex-scroll-pos');
+      if (savedPos) {
+        // DOMの描画完了を待つために少し遅延させる
+        const timer = setTimeout(() => {
+          window.scrollTo(0, parseInt(savedPos, 10));
+        }, 100);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isInitialLoading, data]);
+
+  useEffect(() => {
+    // 保存: スクロールするたびに位置を記憶
+    const savePos = () => {
+      if (window.location.pathname === '/') {
+        sessionStorage.setItem('pokedex-scroll-pos', window.scrollY.toString());
+      }
+    };
+    window.addEventListener('scroll', savePos);
+    return () => window.removeEventListener('scroll', savePos);
+  }, []);
+
   return (
     <div className="pb-12">
       <FilterBar
@@ -48,7 +76,7 @@ export const PokemonList = () => {
       ) : (
         <>
           <div className="mb-6 text-slate-500 dark:text-slate-400 font-medium">
-            Found {totalCount} Pokémon
+            {t('common.found_count', { count: totalCount })}
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
@@ -63,7 +91,7 @@ export const PokemonList = () => {
 
           {data?.pages[0].data.length === 0 && (
             <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <p className="text-slate-500 dark:text-slate-400 text-lg">No Pokémon found matching your criteria.</p>
+              <p className="text-slate-500 dark:text-slate-400 text-lg">{t('common.no_pokemon')}</p>
             </div>
           )}
 

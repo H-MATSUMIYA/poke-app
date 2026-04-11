@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchPokemonDetail } from '../api/pokeApi';
+import { useTranslation } from 'react-i18next';
+import { fetchPokemonDetail, fetchPokemonSpecies } from '../api/pokeApi';
 import { getTypeColor } from '../utils/typeColors';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,13 +10,19 @@ interface PokemonCardProps {
 
 export const PokemonCard = ({ name }: PokemonCardProps) => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
-  const { data: pokemon, isLoading, error } = useQuery({
+  const { data: pokemon, isLoading: isPokemonLoading, error: pokemonError } = useQuery({
     queryKey: ['pokemon', name],
     queryFn: () => fetchPokemonDetail(name),
   });
 
-  if (isLoading) {
+  const { data: species, isLoading: isSpeciesLoading } = useQuery({
+    queryKey: ['species', name],
+    queryFn: () => fetchPokemonSpecies(name),
+  });
+
+  if (isPokemonLoading || isSpeciesLoading) {
     return (
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 w-full h-64 animate-pulse flex flex-col items-center justify-center">
         <div className="w-24 h-24 bg-slate-200 dark:bg-slate-700 rounded-full mb-4"></div>
@@ -25,14 +32,16 @@ export const PokemonCard = ({ name }: PokemonCardProps) => {
     );
   }
 
-  if (error || !pokemon) {
+  if (pokemonError || !pokemon || !species) {
     return (
       <div className="bg-red-50 dark:bg-red-900/20 text-red-500 p-4 rounded-xl border border-red-200 w-full h-64 flex items-center justify-center text-sm">
-        Failed to load
+        {t('common.no_pokemon')}
       </div>
     );
   }
 
+  const currentLang = i18n.language.startsWith('ja') ? 'ja' : 'en';
+  const localizedName = species.names.find(n => n.language.name === (currentLang === 'ja' ? 'ja' : 'en'))?.name || pokemon.name;
   const imageUrl = pokemon.sprites.other['official-artwork'].front_default;
 
   return (
@@ -46,21 +55,21 @@ export const PokemonCard = ({ name }: PokemonCardProps) => {
         </span>
         <div className="w-32 h-32 mt-4 mb-4 relative drop-shadow-md group-hover:scale-110 transition-transform duration-300">
           {imageUrl ? (
-            <img src={imageUrl} alt={pokemon.name} className="w-full h-full object-contain" loading="lazy" />
+            <img src={imageUrl} alt={localizedName} className="w-full h-full object-contain" loading="lazy" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-slate-400">No Image</div>
+            <div className="w-full h-full flex items-center justify-center text-slate-400">{t('common.no_image')}</div>
           )}
         </div>
         <h3 className="text-lg font-bold text-slate-800 dark:text-white capitalize mb-4 tracking-wide">
-          {pokemon.name}
+          {localizedName}
         </h3>
         <div className="flex gap-2">
-          {pokemon.types.map((t) => (
+          {pokemon.types.map((type_info) => (
             <span
-              key={t.type.name}
-              className={`px-3 py-1 rounded-full text-xs font-semibold capitalize tracking-wide ${getTypeColor(t.type.name)}`}
+              key={type_info.type.name}
+              className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getTypeColor(type_info.type.name)}`}
             >
-              {t.type.name}
+              {t(`types.${type_info.type.name}`)}
             </span>
           ))}
         </div>
