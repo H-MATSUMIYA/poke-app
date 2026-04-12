@@ -30,3 +30,13 @@ npm install
 ```bash
 npm run dev
 ```
+
+---
+
+## 🤖 AIエージェント向けドキュメント (Agent Specs)
+
+このプロジェクトを AI エージェントがメンテナンスするための「秘伝の書」です。
+
+- [Agent Guidelines (agent.md)](./docs/agent.md): プロジェクトの基本方針と行動規約
+- [Decision Memory (memory.md)](./docs/memory.md): 過去の重要な意思決定の記録
+- [Agent Skills (skills.md)](./docs/skills.md): ポケモンAPIや実装に関する技術的知見
