@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFilteredPokemonList } from '../hooks/usePokemonList';
-import { PokemonCard } from '../components/PokemonCard';
-import { FilterBar } from '../components/FilterBar';
+import { useFilteredPokemonList } from './hooks/usePokemonList';
+import { PokemonCard } from './components/PokemonCard';
+import { FilterBar } from './components/FilterBar';
 
 export const PokemonList = () => {
   const { t } = useTranslation();

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { fetchPokemonDetail, fetchSpeciesByUrl } from '../api/pokeApi';
-import { getTypeColor } from '../utils/typeColors';
+import { fetchPokemonDetail, fetchSpeciesByUrl } from '../../../api/pokeApi';
+import { getTypeColor } from '../../../utils/typeColors';
 import { useNavigate } from 'react-router-dom';
 
 interface PokemonCardProps {

@@ -1,5 +1,5 @@
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
-import { fetchPokemonList, fetchType } from '../api/pokeApi';
+import { fetchPokemonList, fetchType } from '../../../api/pokeApi';
 
 // 世代ごとのID範囲定義（基本のすがた）
 const GENERATIONS: Record<string, [number, number]> = {

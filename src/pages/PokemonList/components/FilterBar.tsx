@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { typeColors } from '../utils/typeColors';
+import { typeColors } from '../../../utils/typeColors';
 
 interface FilterBarProps {
   searchTerm: string;

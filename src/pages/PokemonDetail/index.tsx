@@ -2,8 +2,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { fetchPokemonDetail, fetchSpeciesByUrl } from '../api/pokeApi';
-import { getTypeColor } from '../utils/typeColors';
+import { fetchPokemonDetail, fetchSpeciesByUrl } from '../../api/pokeApi';
+import { getTypeColor } from '../../utils/typeColors';
 
 export const PokemonDetailScreen = () => {
   const { name } = useParams<{ name: string }>();

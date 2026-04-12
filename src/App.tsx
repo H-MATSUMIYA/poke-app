@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { PokemonList } from './pages/PokemonList';
-import { PokemonDetailScreen } from './pages/PokemonDetailScreen';
+import { PokemonDetailScreen } from './pages/PokemonDetail';
 import { ThemeSwitcher } from './components/ThemeSwitcher';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 
