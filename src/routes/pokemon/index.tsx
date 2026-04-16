@@ -1,29 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import { useFilteredPokemonList } from './hooks/usePokemonList';
-import { PokemonCard } from './components/PokemonCard';
-import { FilterBar } from './components/FilterBar';
+import { useFilteredPokemonList } from '../../hooks/pokemon-list/usePokemonList';
+import { PokemonCard } from '../../components/pokemon-list/PokemonCard';
+import { FilterBar } from '../../components/pokemon-list/FilterBar';
 
-export const PokemonList = () => {
+export const Route = createFileRoute('/pokemon/')({
+  component: PokemonList,
+});
+
+function PokemonList() {
   const { t } = useTranslation();
 
-  // 初期値としてsessionStorageから取得
   const [searchTerm, setSearchTerm] = useState(() => sessionStorage.getItem('pokedex-search') || '');
   const [typeFilter, setTypeFilter] = useState(() => sessionStorage.getItem('pokedex-type') || '');
   const [genFilter, setGenFilter] = useState(() => sessionStorage.getItem('pokedex-gen') || '');
 
-  // フィルタが変更されるたびにsessionStorageを更新
-  useEffect(() => {
-    sessionStorage.setItem('pokedex-search', searchTerm);
-  }, [searchTerm]);
-
-  useEffect(() => {
-    sessionStorage.setItem('pokedex-type', typeFilter);
-  }, [typeFilter]);
-
-  useEffect(() => {
-    sessionStorage.setItem('pokedex-gen', genFilter);
-  }, [genFilter]);
+  // ハンドラーで直接Storageを更新（useEffectを使わない）
+  const handleSearchChange = (val: string) => {
+    setSearchTerm(val);
+    sessionStorage.setItem('pokedex-search', val);
+  };
+  const handleTypeChange = (val: string) => {
+    setTypeFilter(val);
+    sessionStorage.setItem('pokedex-type', val);
+  };
+  const handleGenChange = (val: string) => {
+    setGenFilter(val);
+    sessionStorage.setItem('pokedex-gen', val);
+  };
 
   const {
     data,
@@ -47,41 +52,15 @@ export const PokemonList = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // スクロール位置の復元と保存
-  useEffect(() => {
-    // 復元: データ読み込み完了後に実行
-    if (!isInitialLoading && data) {
-      const savedPos = sessionStorage.getItem('pokedex-scroll-pos');
-      if (savedPos) {
-        // DOMの描画完了を待つために少し遅延させる
-        const timer = setTimeout(() => {
-          window.scrollTo(0, parseInt(savedPos, 10));
-        }, 100);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [isInitialLoading, data]);
-
-  useEffect(() => {
-    // 保存: スクロールするたびに位置を記憶
-    const savePos = () => {
-      if (window.location.pathname === '/') {
-        sessionStorage.setItem('pokedex-scroll-pos', window.scrollY.toString());
-      }
-    };
-    window.addEventListener('scroll', savePos);
-    return () => window.removeEventListener('scroll', savePos);
-  }, []);
-
   return (
     <div className="pb-12">
       <FilterBar
         searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
+        setSearchTerm={handleSearchChange}
         typeFilter={typeFilter}
-        setTypeFilter={setTypeFilter}
+        setTypeFilter={handleTypeChange}
         genFilter={genFilter}
-        setGenFilter={setGenFilter}
+        setGenFilter={handleGenChange}
       />
 
       {isInitialLoading ? (
@@ -123,4 +102,4 @@ export const PokemonList = () => {
       )}
     </div>
   );
-};
+}

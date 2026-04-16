@@ -1,15 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { fetchPokemonDetail, fetchSpeciesByUrl } from '../../../api/pokeApi';
-import { getTypeColor } from '../../../utils/typeColors';
-import { useNavigate } from 'react-router-dom';
+import { fetchPokemonDetail, fetchSpeciesByUrl } from '../../api/pokeApi';
+import { getTypeColor } from '../../utils/typeColors';
+import { Link } from '@tanstack/react-router';
 
 interface PokemonCardProps {
   name: string;
 }
 
 export const PokemonCard = ({ name }: PokemonCardProps) => {
-  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
   // 1. ポケモン詳細データの取得
@@ -19,7 +18,6 @@ export const PokemonCard = ({ name }: PokemonCardProps) => {
   });
 
   // 2. 詳細データの species.url を使って種族データを取得
-  // こうすることで、'zygarde-10' のようなフォルム名で 404 エラーになるのを防げる
   const { data: species, isLoading: isSpeciesLoading } = useQuery({
     queryKey: ['species', pokemon?.species.url],
     queryFn: () => fetchSpeciesByUrl(pokemon!.species.url),
@@ -49,9 +47,10 @@ export const PokemonCard = ({ name }: PokemonCardProps) => {
   const imageUrl = pokemon.sprites.other['official-artwork'].front_default;
 
   return (
-    <div 
-      onClick={() => navigate(`/pokemon/${pokemon.name}`)}
-      className="group bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200 dark:border-slate-700 overflow-hidden cursor-pointer transform hover:-translate-y-1"
+    <Link 
+      to="/pokemon/$name"
+      params={{ name: pokemon.name }}
+      className="group bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200 dark:border-slate-700 overflow-hidden cursor-pointer transform hover:-translate-y-1 block"
     >
       <div className="p-5 flex flex-col items-center relative">
         <span className="absolute top-4 left-4 text-xs font-bold text-slate-400 dark:text-slate-500">
@@ -78,6 +77,6 @@ export const PokemonCard = ({ name }: PokemonCardProps) => {
           ))}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };

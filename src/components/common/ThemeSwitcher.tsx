@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '../../hooks/common/useTheme';
 
 export const ThemeSwitcher = () => {
   const { t } = useTranslation();

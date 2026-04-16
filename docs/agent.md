@@ -10,17 +10,22 @@
 ## 🛠 技術スタック
 - **Frontend**: React (Functional Components)
 - **Tooling**: Vite
-- **Styling**: Tailwind CSS (バニラCSSの柔軟性を保ちつつ適用)
+- **Routing**: TanStack Router (SPA mode, Directory-based)
+- **Styling**: Tailwind CSS
 - **State Management**: React Query (TanStack Query) v5
 - **I18n**: react-i18next (日本語/英語)
 
-## 📁 ディレクトリ構造 (Feature-based)
-- `src/pages/[PageName]/` 配下に関連ファイルをまとめる。
-  - `index.tsx`: ページ本体
-  - `components/`: そのページ独自のパーツ
-  - `hooks/`: そのページ独自のロジック
-- `src/components/`: アプリ共通のUIパーツ
-- `src/hooks/`: アプリ共通のロジック
+## 📁 ディレクトリ構造 (TanStack Router 準拠)
+- `src/routes/`: ルーティングの定義場所（ファイルベース）。
+  - `__root.tsx`: アプリ全体の共通枠。
+  - `index.tsx`: トップページ (/) - ランディングページ。
+  - `pokemon/`: ポケモン図鑑機能のグループ。
+    - `index.tsx`: ポケモン一覧 (/pokemon)。
+    - `$name.tsx`: ポケモン詳細 (/pokemon/:name)。
+- `src/components/`: UIパーツ。機能ごとにサブフォルダ化。
+  - `pokemon-list/`, `pokemon-detail/`, `common/`
+- `src/hooks/`: ロジック。機能ごとにサブフォルダ化。
+  - `pokemon-list/`, `common/`
 
 ## 📝 コミットメッセージ
 絵文字プレフィックスを使用した日本語メッセージを採用。
