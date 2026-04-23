@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { useFilteredPokemonList } from '../../hooks/pokemon-list/usePokemonList';
-import { PokemonCard } from '../../components/pokemon-list/PokemonCard';
-import { FilterBar } from '../../components/pokemon-list/FilterBar';
+import { PokemonCard } from './-index/components/PokemonCard';
+import { FilterBar } from './-index/components/FilterBar';
 
 export const Route = createFileRoute('/pokemon/')({
   component: PokemonList,
