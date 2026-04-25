@@ -17,6 +17,7 @@
 - **Routing**: TanStack Router (SPA mode, Directory-based)
 - **Styling**: Tailwind CSS
 - **State Management**: React Query (TanStack Query) v5
+- **Validation**: Zod (スキーマ定義/型推論)
 - **I18n**: react-i18next (日本語/英語)
 
 ## 📁 ディレクトリ構造 (TanStack Router 準拠)

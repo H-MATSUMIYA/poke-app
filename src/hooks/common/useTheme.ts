@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
 
-type Theme = 'light' | 'dark' | 'system';
+const THEMES = ['light', 'dark', 'system'] as const;
+type Theme = (typeof THEMES)[number];
+
+function isTheme(value: string | null): value is Theme {
+  return value !== null && (THEMES as readonly string[]).includes(value);
+}
 
 export const useTheme = () => {
   const [theme, setTheme] = useState<Theme>(() => {
     const stored = localStorage.getItem('theme');
-    return (stored as Theme) || 'system';
+    return isTheme(stored) ? stored : 'system';
   });
 
   useEffect(() => {
