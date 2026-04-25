@@ -1,33 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
+import React, { useEffect } from 'react';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
 import { useFilteredPokemonList } from '../../hooks/pokemon-list/usePokemonList';
 import { PokemonCard } from './-index/components/PokemonCard';
 import { FilterBar } from './-index/components/FilterBar';
+import type { NamedAPIResource } from '../../types/pokemon';
+
+// 検索パラメータのバリデーションスキーマ
+const pokemonSearchSchema = z.object({
+  search: z.string().optional().catch(''),
+  type: z.string().optional().catch(''),
+  gen: z.string().optional().catch(''),
+});
 
 export const Route = createFileRoute('/pokemon/')({
+  validateSearch: pokemonSearchSchema,
   component: PokemonList,
 });
 
 function PokemonList() {
   const { t } = useTranslation();
+  const navigate = useNavigate({ from: Route.fullPath });
+  
+  // URLから現在の検索状態を取得 (型安全)
+  const { search = '', type = '', gen = '' } = Route.useSearch();
 
-  const [searchTerm, setSearchTerm] = useState(() => sessionStorage.getItem('pokedex-search') || '');
-  const [typeFilter, setTypeFilter] = useState(() => sessionStorage.getItem('pokedex-type') || '');
-  const [genFilter, setGenFilter] = useState(() => sessionStorage.getItem('pokedex-gen') || '');
-
-  // ハンドラーで直接Storageを更新（useEffectを使わない）
+  // URLを更新してフィルターを適用
   const handleSearchChange = (val: string) => {
-    setSearchTerm(val);
-    sessionStorage.setItem('pokedex-search', val);
+    navigate({ search: (prev) => ({ ...prev, search: val || undefined }) });
   };
   const handleTypeChange = (val: string) => {
-    setTypeFilter(val);
-    sessionStorage.setItem('pokedex-type', val);
+    navigate({ search: (prev) => ({ ...prev, type: val || undefined }) });
   };
   const handleGenChange = (val: string) => {
-    setGenFilter(val);
-    sessionStorage.setItem('pokedex-gen', val);
+    navigate({ search: (prev) => ({ ...prev, gen: val || undefined }) });
   };
 
   const {
@@ -37,7 +44,7 @@ function PokemonList() {
     isFetchingNextPage,
     isInitialLoading,
     totalCount
-  } = useFilteredPokemonList(searchTerm, typeFilter, genFilter);
+  } = useFilteredPokemonList(search, type, gen);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,57 +55,61 @@ function PokemonList() {
         }
       }
     };
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  if (isInitialLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="pb-12">
-      <FilterBar
-        searchTerm={searchTerm}
+    <div className="animate-in fade-in duration-700">
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div>
+          <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight mb-2">
+            {t('common.pokedex_title')}
+          </h2>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">
+            {t('common.pokedex_subtitle', { count: totalCount })}
+          </p>
+        </div>
+      </div>
+
+      <FilterBar 
+        searchTerm={search}
         setSearchTerm={handleSearchChange}
-        typeFilter={typeFilter}
+        typeFilter={type}
         setTypeFilter={handleTypeChange}
-        genFilter={genFilter}
+        genFilter={gen}
         setGenFilter={handleGenChange}
       />
 
-      {isInitialLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-500"></div>
+      {totalCount === 0 ? (
+        <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-3xl border border-dashed border-slate-300 dark:border-slate-700">
+          <p className="text-slate-500 dark:text-slate-400 text-lg font-bold">{t('common.no_pokemon')}</p>
         </div>
       ) : (
-        <>
-          <div className="mb-6 text-slate-500 dark:text-slate-400 font-medium">
-            {t('common.found_count', { count: totalCount })}
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {data?.pages.map((page, i) => (
-              <React.Fragment key={i}>
-                {page.data.map(pokemon => (
-                  <PokemonCard key={pokemon.name} name={pokemon.name} />
-                ))}
-              </React.Fragment>
-            ))}
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {data?.pages.map((page, i) => (
+            <React.Fragment key={i}>
+              {page.data.map((pokemon: NamedAPIResource) => (
+                <PokemonCard key={pokemon.name} name={pokemon.name} />
+              ))}
+            </React.Fragment>
+          ))}
+        </div>
+      )}
 
-          {totalCount === 0 && (
-            <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <p className="text-slate-500 dark:text-slate-400 text-lg">{t('common.no_pokemon')}</p>
-            </div>
-          )}
-
-          {isFetchingNextPage && (
-            <div className="flex justify-center mt-12 mb-4">
-              <div className="animate-pulse flex space-x-3">
-                <div className="h-3 w-3 bg-red-400 rounded-full"></div>
-                <div className="h-3 w-3 bg-red-400 rounded-full animate-bounce"></div>
-                <div className="h-3 w-3 bg-red-400 rounded-full"></div>
-              </div>
-            </div>
-          )}
-        </>
+      {isFetchingNextPage && (
+        <div className="flex justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500"></div>
+        </div>
       )}
     </div>
   );

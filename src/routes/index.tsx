@@ -1,12 +1,10 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { useTranslation } from 'react-i18next';
 
 export const Route = createFileRoute('/')({
   component: LandingPage,
 });
 
 function LandingPage() {
-  const { t } = useTranslation();
 
   return (
     <div className="relative min-h-[calc(100vh-200px)] flex items-center justify-center overflow-hidden">

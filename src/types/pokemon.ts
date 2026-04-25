@@ -28,6 +28,7 @@ export interface PokemonDetail {
   };
   weight: number;
   height: number;
+  species: NamedAPIResource;
   stats: {
     base_stat: number;
     stat: NamedAPIResource;

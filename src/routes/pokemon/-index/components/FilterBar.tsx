@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { typeColors } from '../../../../utils/typeColors';
 
@@ -14,6 +15,26 @@ export const FilterBar = ({
   searchTerm, setSearchTerm, typeFilter, setTypeFilter, genFilter, setGenFilter
 }: FilterBarProps) => {
   const { t } = useTranslation();
+  
+  // IME入力を邪魔しないためのローカル状態
+  const [localSearch, setLocalSearch] = useState(searchTerm);
+
+  // プロパティ（URL）が外部から変更された場合に同期
+  useEffect(() => {
+    setLocalSearch(searchTerm);
+  }, [searchTerm]);
+
+  // デバウンス処理: 入力が止まってから 300ms 後に親の状態を更新
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localSearch !== searchTerm) {
+        setSearchTerm(localSearch);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [localSearch, searchTerm, setSearchTerm]);
+
   const types = Object.keys(typeColors);
   const generationOptions = [
     '1', '2', '3', '4', '5', '6', '7', '8', 'hisui', '9'
@@ -25,8 +46,8 @@ export const FilterBar = ({
         <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{t('common.search')}</label>
         <input 
           type="text" 
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          value={localSearch}
+          onChange={(e) => setLocalSearch(e.target.value)}
           placeholder={t('common.search_placeholder')}
           className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-3 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none text-slate-800 dark:text-white transition-all shadow-inner"
         />

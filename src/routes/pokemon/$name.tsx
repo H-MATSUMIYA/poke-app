@@ -112,7 +112,6 @@ function PokemonDetail() {
       <div className="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700/60">
         <DetailHero 
           id={pokemon.id}
-          name={pokemon.name}
           localizedName={localizedName}
           genus={genus}
           types={pokemon.types}

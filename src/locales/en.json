@@ -12,7 +12,9 @@
     "no_pokemon": "No Pokémon found matching your criteria.",
     "back": "Back to Pokédex",
     "loading": "Loading...",
-    "no_image": "No Image"
+    "no_image": "No Image",
+    "pokedex_title": "World Pokédex",
+    "pokedex_subtitle": "Found {{count}} Pokémon from over 1,000 species"
   },
   "theme": {
     "light": "Light",

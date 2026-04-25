@@ -3,14 +3,13 @@ import { getTypeColor } from '../../../../utils/typeColors';
 
 interface DetailHeroProps {
   id: number;
-  name: string;
   localizedName: string;
   genus: string;
   types: Array<{ type: { name: string } }>;
   imageUrl: string | null;
 }
 
-export const DetailHero = ({ id, name, localizedName, genus, types, imageUrl }: DetailHeroProps) => {
+export const DetailHero = ({ id, localizedName, genus, types, imageUrl }: DetailHeroProps) => {
   const { t } = useTranslation();
 
   return (
