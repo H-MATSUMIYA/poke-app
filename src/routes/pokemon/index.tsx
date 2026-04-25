@@ -22,7 +22,7 @@ export const Route = createFileRoute('/pokemon/')({
 function PokemonList() {
   const { t } = useTranslation();
   const navigate = useNavigate({ from: Route.fullPath });
-  
+
   // URLから現在の検索状態を取得 (型安全)
   const { search = '', type = '', gen = '' } = Route.useSearch();
 
@@ -81,7 +81,7 @@ function PokemonList() {
         </div>
       </div>
 
-      <FilterBar 
+      <FilterBar
         searchTerm={search}
         setSearchTerm={handleSearchChange}
         typeFilter={type}

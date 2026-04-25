@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDebouncedSync } from '../../../../hooks/common/useDebouncedSync';
 import { typeColors } from '../../../../utils/typeColors';
 
 interface FilterBarProps {
@@ -16,24 +17,7 @@ export const FilterBar = ({
 }: FilterBarProps) => {
   const { t } = useTranslation();
   
-  // IME入力を邪魔しないためのローカル状態
-  const [localSearch, setLocalSearch] = useState(searchTerm);
-
-  // プロパティ（URL）が外部から変更された場合に同期
-  useEffect(() => {
-    setLocalSearch(searchTerm);
-  }, [searchTerm]);
-
-  // デバウンス処理: 入力が止まってから 300ms 後に親の状態を更新
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (localSearch !== searchTerm) {
-        setSearchTerm(localSearch);
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [localSearch, searchTerm, setSearchTerm]);
+  const [localSearch, setLocalSearch] = useDebouncedSync(searchTerm, setSearchTerm);
 
   const types = Object.keys(typeColors);
   const generationOptions = [
