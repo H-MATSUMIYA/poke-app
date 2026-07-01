@@ -19,6 +19,8 @@
 - **State Management**: React Query (TanStack Query) v5
 - **Validation**: Zod (スキーマ定義/型推論)
 - **I18n**: react-i18next (日本語/英語)
+- **Hosting / Edge**: Cloudflare Workers (Wrangler)
+- **API Proxy**: 本番環境では `/api/*` → PokeAPI（Workers 上でキャッシュ）
 
 ## 📁 ディレクトリ構造 (TanStack Router 準拠)
 - `src/routes/`: ルーティングの定義場所（ファイルベース）。
@@ -36,6 +38,8 @@
 - `src/hooks/`: アプリ全体で共有するロジック。
   - `common/`
 - `src/api/`: APIクライアント。
+- `src/worker.ts`: Cloudflare Workers エントリ（PokeAPI プロキシ＆静的アセット配信）。
+- `wrangler.jsonc`: Wrangler 設定（`dist` をアセット、`src/worker.ts` を main）。
 
 ## 📝 コミットメッセージ
 絵文字プレフィックスを使用した日本語メッセージを採用。

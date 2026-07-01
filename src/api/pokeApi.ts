@@ -1,6 +1,8 @@
 import type { PokemonListResponse, PokemonDetail, GenerationResponse, TypeResponse, PokemonSpecies } from '../types/pokemon';
 
-const BASE_URL = 'https://pokeapi.co/api/v2';
+const BASE_URL = import.meta.env.PROD 
+  ? '/api/v2' 
+  : 'https://pokeapi.co/api/v2';
 
 export const fetchPokemonList = async (limit = 10000, offset = 0): Promise<PokemonListResponse> => {
   const res = await fetch(`${BASE_URL}/pokemon?limit=${limit}&offset=${offset}`);
@@ -36,8 +38,12 @@ export const fetchPokemonSpecies = async (nameOrId: string | number): Promise<Po
  * URLを指定して種族データを取得する（フォルム違いの取得404エラー回避用）
  */
 export const fetchSpeciesByUrl = async (url: string): Promise<PokemonSpecies> => {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch species from ${url}`);
+  let targetUrl = url;
+  if (import.meta.env.PROD && url.startsWith('https://pokeapi.co/api/')) {
+    targetUrl = url.replace('https://pokeapi.co/api/', '/api/');
+  }
+  const res = await fetch(targetUrl);
+  if (!res.ok) throw new Error(`Failed to fetch species from ${targetUrl}`);
   return res.json();
 };
 
