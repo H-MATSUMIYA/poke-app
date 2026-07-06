@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { fetchPokemonDetail, fetchSpeciesByUrl } from '../../../../api/pokeApi';
 import { getTypeColor } from '../../../../utils/typeColors';
+import { PokemonSprite } from '../../../../components/common/PokemonSprite';
 import { Link } from '@tanstack/react-router';
 
 interface PokemonCardProps {
@@ -44,7 +45,6 @@ export const PokemonCard = ({ name }: PokemonCardProps) => {
 
   const currentLang = i18n.language.startsWith('ja') ? 'ja' : 'en';
   const localizedName = species.names.find(n => n.language.name === (currentLang === 'ja' ? 'ja' : 'en'))?.name || pokemon.name;
-  const imageUrl = pokemon.sprites.other['official-artwork'].front_default;
 
   return (
     <Link 
@@ -57,11 +57,11 @@ export const PokemonCard = ({ name }: PokemonCardProps) => {
           #{String(pokemon.id).padStart(4, '0')}
         </span>
         <div className="w-32 h-32 mt-4 mb-4 relative drop-shadow-md group-hover:scale-110 transition-transform duration-300">
-          {imageUrl ? (
-            <img src={imageUrl} alt={localizedName} className="w-full h-full object-contain" loading="lazy" />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-slate-400">{t('common.no_image')}</div>
-          )}
+          <PokemonSprite
+            pokemonId={pokemon.id}
+            alt={localizedName}
+            className="w-full h-full object-contain"
+          />
         </div>
         <h3 className="text-lg font-bold text-slate-800 dark:text-white capitalize mb-4 tracking-wide">
           {localizedName}

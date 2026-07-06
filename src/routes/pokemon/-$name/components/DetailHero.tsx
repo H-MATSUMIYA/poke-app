@@ -1,15 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import { getTypeColor } from '../../../../utils/typeColors';
+import { PokemonSprite } from '../../../../components/common/PokemonSprite';
 
 interface DetailHeroProps {
   id: number;
   localizedName: string;
   genus: string;
   types: Array<{ type: { name: string } }>;
-  imageUrl: string | null;
 }
 
-export const DetailHero = ({ id, localizedName, genus, types, imageUrl }: DetailHeroProps) => {
+export const DetailHero = ({ id, localizedName, genus, types }: DetailHeroProps) => {
   const { t } = useTranslation();
 
   return (
@@ -23,13 +23,12 @@ export const DetailHero = ({ id, localizedName, genus, types, imageUrl }: Detail
 
       {/* ポケモン画像 */}
       <div className="w-72 h-72 md:w-96 md:h-96 relative z-10 drop-shadow-2xl hover:scale-105 transition-transform duration-500">
-        {imageUrl ? (
-          <img src={imageUrl} alt={localizedName} className="w-full h-full object-contain filter" />
-        ) : (
-          <div className="w-full h-full bg-slate-200 rounded-full flex items-center justify-center font-bold text-slate-400">
-            {t('common.no_image')}
-          </div>
-        )}
+        <PokemonSprite
+          pokemonId={id}
+          alt={localizedName}
+          loading="eager"
+          className="w-full h-full object-contain filter"
+        />
       </div>
 
       {/* 基本情報 */}

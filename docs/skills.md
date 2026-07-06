@@ -10,6 +10,16 @@
 - `/pokemon-species/[id or name]` エンドポイントで取得できるのは「種族」のデータ（日本語名や説明文など）。
 - 特殊な姿を持つポケモン（ラブトロス、ジガルデなど）は、必ず `species.url` から種族データを取得すること。
 
+### スプライト画像と CDN
+- PokeAPI の JSON レスポンスには画像ファイル本体は含まれず、`sprites.other['official-artwork'].front_default` 等に **URL 文字列** が入る。
+- その URL は `raw.githubusercontent.com/PokeAPI/sprites/...`（GitHub raw）を指す。**API の URL をそのまま `<img src>` に使わないこと** — 一覧で同時大量取得すると 429 になりやすい。
+- 実際の画像ファイルは GitHub 上の [`PokeAPI/sprites`](https://github.com/PokeAPI/sprites) リポジトリに置かれている。
+- 本プロジェクトでは jsDelivr CDN URL を `PokemonSprite` で組み立てる:
+  - 公式イラスト: `https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/other/official-artwork/{id}.png`
+  - フォールバック: `https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/{id}.png`
+- 実装: `src/components/common/PokemonSprite.tsx` — official-artwork を先に試し、`onError` で通常スプライトへ切り替える。
+- Workers の `/api/*` プロキシは JSON 用のみ。画像は jsDelivr が CDN 役を担うため Worker 経由にしない。
+
 ### 世代の区切り (Generation Boundaries)
 世代フィルターは ID 範囲で絞り込む。定義は `usePokemonList.ts` の `GENERATIONS` が正。
 - **第1世代**: 1 - 151 (カントー)

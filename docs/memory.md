@@ -103,3 +103,16 @@
   - Wrangler のローカル開発用ディレクトリ `.wrangler` を Git 管理対象外に。
 - **理由**: Cache API は Request の method / headers も照合対象になるため、不要な差分で MISS が増えていた。
 - **状態**: ✅ 現行
+
+### 🖼️ スプライト画像の jsDelivr CDN 化
+- **決定**: PokeAPI が返す GitHub raw URL を使わず、`PokemonSprite` コンポーネントで jsDelivr CDN URL を組み立てて表示する。
+- **経緯**: 一覧画面で多数の `<img>` が `raw.githubusercontent.com` に同時アクセスし、429 (Too Many Requests) で画像が表示されない不具合が発生。API データ（Worker 経由）は正常だった。
+- **変更内容**:
+  - `src/components/common/PokemonSprite.tsx` を追加（一覧・詳細で共用）。
+  - official-artwork URL を jsDelivr 形式で生成し、読み込み失敗時は通常スプライト (`pokemon/{id}.png`) へフォールバック。
+  - `PokemonCard.tsx` / `DetailHero.tsx` の `<img>` を `PokemonSprite` に置き換え。
+- **理由**:
+  - PokeAPI の JSON に含まれる画像 URL は GitHub raw 向けであり、大量同時取得に向かないため。
+  - jsDelivr は `PokeAPI/sprites` リポジトリを CDN 配信しており、画像取得の CDN 役を担えるため。
+  - Workers の `/api/*` キャッシュは JSON 用。画像まで Worker プロキシする必要はない（jsDelivr が既に CDN）。
+- **状態**: ✅ 現行

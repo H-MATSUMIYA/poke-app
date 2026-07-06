@@ -97,7 +97,6 @@ function PokemonDetail() {
   const jaGenus = species.genera.find(g => g.language.name === 'ja');
   const enGenus = species.genera.find(g => g.language.name === 'en');
   const genus = (currentLang === 'ja' ? jaGenus?.genus : enGenus?.genus) || jaGenus?.genus || enGenus?.genus || '';
-  const imageUrl = pokemon.sprites.other['official-artwork'].front_default;
 
   return (
     <div className="max-w-5xl mx-auto pb-12 animate-in fade-in slide-in-from-bottom-8 duration-500">
@@ -115,7 +114,6 @@ function PokemonDetail() {
           localizedName={localizedName}
           genus={genus}
           types={pokemon.types}
-          imageUrl={imageUrl}
         />
 
         <div className="p-8 md:p-16 bg-white dark:bg-slate-800">
