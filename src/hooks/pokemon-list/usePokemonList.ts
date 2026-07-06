@@ -20,8 +20,25 @@ const extractIdFromUrl = (url: string) => {
   return parseInt(parts[parts.length - 1], 10);
 };
 
-// 日本語名のマッピング（GitHubのデータセットを利用）
-const LOCALIZED_NAMES_URL = 'https://raw.githubusercontent.com/fanzeyi/pokemon.json/master/pokedex.json';
+// 日本語名のマッピング（PokeAPI 公式 CSV — 全1025種族対応）
+const SPECIES_NAMES_CSV_URL =
+  'https://cdn.jsdelivr.net/gh/PokeAPI/pokeapi@master/data/v2/csv/pokemon_species_names.csv';
+const JA_LANG_ID = '11';
+const EN_LANG_ID = '9';
+
+function parseSpeciesNamesCsv(csv: string): Record<number, { en: string; ja: string }> {
+  const mapping: Record<number, { en: string; ja: string }> = {};
+  for (const line of csv.trim().split('\n').slice(1)) {
+    if (!line) continue;
+    const [speciesIdStr, langId, name] = line.split(',', 3);
+    if (!name) continue;
+    const id = parseInt(speciesIdStr, 10);
+    if (!mapping[id]) mapping[id] = { en: '', ja: '' };
+    if (langId === JA_LANG_ID) mapping[id].ja = name;
+    if (langId === EN_LANG_ID) mapping[id].en = name.toLowerCase();
+  }
+  return mapping;
+}
 
 export const useFilteredPokemonList = (searchTarget: string, typeFilter: string, genFilter: string) => {
   // 1. 全ポケモンのリストをフェッチ
@@ -41,19 +58,11 @@ export const useFilteredPokemonList = (searchTarget: string, typeFilter: string,
 
   // 3. 日本語名のマッピングをフェッチ（検索体験向上のため）
   const localizedNamesQuery = useQuery({
-    queryKey: ['localizedNames'],
+    queryKey: ['localizedNames', 'pokeapi-csv'],
     queryFn: async () => {
-      const res = await fetch(LOCALIZED_NAMES_URL);
+      const res = await fetch(SPECIES_NAMES_CSV_URL);
       if (!res.ok) return null;
-      const data = await res.json();
-      // IDをキーにしたマッピングを作成
-      const mapping: Record<number, { en: string; ja: string }> = {};
-      data.forEach((p: any) => {
-        mapping[p.id] = {
-          en: p.name.english.toLowerCase(),
-          ja: p.name.japanese
-        };
-      });
+      const mapping = parseSpeciesNamesCsv(await res.text());
       return mapping;
     },
     staleTime: Infinity,
