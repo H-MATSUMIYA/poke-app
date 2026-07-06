@@ -86,7 +86,7 @@
   - `pokeApi.ts` の `BASE_URL` を本番時 `/api/v2`、開発時 `https://pokeapi.co/api/v2` に切り替え。
   - `fetchSpeciesByUrl` で PokeAPI 絶対 URL を本番時 `/api/` 相対パスへ変換。
   - Workers 上で `/api/*` を `https://pokeapi.co/api/*` にプロキシし、Cache API でエッジキャッシュ。
-  - `/api/` 以外は `dist` の静的アセット配信（SPA フォールバック: 404 HTML → `200.html`）。
+  - `/api/` 以外は `dist` の静的アセット配信。
 - **理由**:
   - PokeAPI への直接アクセスを減らし、レスポンス速度と可用性を向上させるため。
   - Cloudflare エッジでキャッシュすることで、一覧・詳細の繰り返し閲覧時の負荷を軽減するため。
@@ -123,3 +123,9 @@
 - **変更内容**: `pokemon_species_names.csv` を1リクエストで取得し、`local_language_id=11`（日本語）を ID キーのマッピングに変換。
 - **理由**: PokeAPI 公式データで1025種族すべての日本語名をカバーでき、追加 API 呼び出しなしで済むため。
 - **状態**: ✅ 現行（`usePokemonList.ts`）
+
+### 🔄 SPA リロード時の `/200` NotFound 修正
+- **決定**: `wrangler.jsonc` に `not_found_handling: single-page-application` と `run_worker_first: ["/api/*"]` を追加。Worker 内の手動 `200.html` フォールバックを削除。
+- **経緯**: `/pokemon/charizard` 等をリロードすると `/200` へリダイレクトされ NotFound 表示。Worker が `200.html` を取得すると Cloudflare Assets が 307 で `/200` へ飛ばしていた。
+- **理由**: Cloudflare 公式 SPA 設定なら `index.html` を同一 URL で返せる。`/api/*` のみ Worker 優先、それ以外は Assets に委譲。
+- **状態**: ✅ 現行

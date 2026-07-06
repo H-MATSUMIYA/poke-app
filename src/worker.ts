@@ -97,19 +97,7 @@ export default {
       }
     }
 
-    // /api/ 以外のリクエストは静的ファイルとして配信
-    try {
-      const response = await env.ASSETS.fetch(request);
-      
-      // SPA対応：ファイルが見つからない（404）かつHTMLのロードを試みている（リロードなど）場合、200.htmlを返す
-      if (response.status === 404 && request.headers.get('Accept')?.includes('text/html')) {
-        const fallbackRequest = new Request(new URL('/200.html', request.url), request);
-        return await env.ASSETS.fetch(fallbackRequest);
-      }
-      
-      return response;
-    } catch (err) {
-      return new Response('Asset not found', { status: 404 });
-    }
-  }
+    // /api/ 以外は静的アセット配信（not_found_handling: SPA → index.html）
+    return env.ASSETS.fetch(request);
+  },
 };
