@@ -2,20 +2,9 @@
 
 React + TypeScript + Vite で作成されたモダンなポケモン図鑑アプリケーションです。
 
-## 🛠 コミット規約 (Commit Convention)
+## コミット規約
 
-本プロジェクトでは、変更内容を分かりやすくするために以下の絵文字を使用したコミットメッセージを採用しています。
-
-### 基本形式
-`絵文字(対象範囲): 内容`
-
-### 使用する絵文字
-- ✨ **新機能**: `:sparkles:` (feat)
-- 🐛 **バグ修正**: `:bug:` (fix)
-- 🛠️ **機能改善**: `:hammer:` (improve)
-- ♻️ **コード整理**: `:recycle:` (refactor)
-- 💄 **スタイル修正**: `:lipstick:` (style)
-- 📝 **ドキュメント**: `:memo:` (docs)
+絵文字プレフィックス付きの日本語メッセージを使用。詳細は [agent.md](./docs/agent.md#コミットメッセージ) を参照。
 
 ---
 
@@ -26,10 +15,52 @@ React + TypeScript + Vite で作成されたモダンなポケモン図鑑アプ
 npm install
 ```
 
-### 開発サーバーの起動
+### 開発サーバー（通常）
+
+UI やフィルターなどの日常開発向け。Vite のみ起動し、PokeAPI には直接アクセスします。
+
 ```bash
 npm run dev
 ```
+
+### 本番同等の確認（Cloudflare Workers）
+
+プロキシ・キャッシュ・SPA フォールバックを含む本番に近い動作をローカルで確認する場合。
+
+```bash
+npm run preview:worker
+```
+
+`dist` をビルドしたうえで Wrangler を起動します。すでに `dist` がある場合は `npm run dev:worker` でも可。
+
+| コマンド | 用途 |
+|---|---|
+| `npm run dev` | 通常開発（Vite、PokeAPI 直叩き） |
+| `npm run preview:worker` | ビルド + Workers ローカル起動 |
+| `npm run dev:worker` | Workers ローカル起動のみ（要 `dist`） |
+
+### 本番デプロイ
+
+#### 通常（Git 連携）
+
+`main` 等へ **push すると Cloudflare が自動でビルド・デプロイ** します。日常運用ではこれだけで十分です。
+
+#### 手動デプロイ（任意）
+
+自動デプロイの障害時や、ローカルから直接上げたい場合のみ使用します。
+
+```bash
+npm run deploy
+```
+
+初回のみ Cloudflare へのログインが必要です（`npx wrangler login`）。
+
+| 方法 | 使うコード | デプロイ先 |
+|---|---|---|
+| Git push | リポジトリに push された内容 | `wrangler.jsonc` の Worker（`poke-app`） |
+| `npm run deploy` | **手元のローカル**（未コミット・未 push 含む） | 上記と**同じ本番 Worker** |
+
+**注意**: 手動デプロイは本番を上書きします。push せずに実行すると、リポジトリと本番の内容がずれるため、通常は Git 連携に任せてください。
 
 ---
 
