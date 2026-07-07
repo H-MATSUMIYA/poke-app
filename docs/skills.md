@@ -50,7 +50,7 @@
 - **タイプフィルター**: `/type/{type}` を `fetchType` で取得し、返却されたポケモン名リストと全件リストを突き合わせる。`typeFilter` が空のときはフェッチしない（`enabled: !!typeFilter`）。
 - **世代フィルター**: `GENERATIONS` の ID 範囲でクライアント側フィルター。
 - **検索**: PokeAPI 公式 CSV（`pokemon_species_names.csv`、jsDelivr 経由）で日本語名マッピングを構築し、英語名・ID・日本語名で絞り込む。
-- **ページング**: API の offset ページングではなく、絞り込み済み配列を `useInfiniteQuery` で 20 件ずつ `slice` する。無限スクロールの状態管理に React Query を利用している。
+- **ページング**: API の offset ページングではなく、絞り込み済み配列を `useInfiniteQuery` で 48 件ずつ `slice` する（6列レイアウトで8行ちょうど）。無限スクロールの状態管理に React Query を利用している。
 
 ### 無限スクロールのトリガー
 - スクロール位置の計算: `scrollTop + clientHeight >= scrollHeight - 300`

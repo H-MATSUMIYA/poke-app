@@ -95,7 +95,7 @@ function PokemonList() {
           <p className="text-slate-500 dark:text-slate-400 text-lg font-bold">{t('common.no_pokemon')}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-6">
           {data?.pages.map((page, i) => (
             <React.Fragment key={i}>
               {page.data.map((pokemon: NamedAPIResource) => (

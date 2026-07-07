@@ -40,6 +40,8 @@ function parseSpeciesNamesCsv(csv: string): Record<number, { en: string; ja: str
   return mapping;
 }
 
+const LIST_PAGE_SIZE = 48;
+
 export const useFilteredPokemonList = (searchTarget: string, typeFilter: string, genFilter: string) => {
   // 1. 全ポケモンのリストをフェッチ
   const allPokemonQuery = useQuery({
@@ -118,7 +120,7 @@ export const useFilteredPokemonList = (searchTarget: string, typeFilter: string,
       if (allPokemonQuery.isLoading || (typeFilter && typePokemonQuery.isLoading)) {
         return { data: [], nextPage: undefined };
       }
-      const pageSize = 20;
+      const pageSize = LIST_PAGE_SIZE;
       const start = pageParam * pageSize;
       const end = start + pageSize;
       return {
