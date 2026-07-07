@@ -35,6 +35,16 @@
 
 ## ⚛️ React & TanStack Query パターン
 
+### React Compiler（自動メモ化）
+- **有効化**: `vite.config.ts` で `@rolldown/plugin-babel` + `reactCompilerPreset()`（`@vitejs/plugin-react` v6）。
+- **依存**: `babel-plugin-react-compiler`（devDependency）。React 19 では `react-compiler-runtime` は不要。
+- **方針**:
+  - 軽い derived state には **手書き `useMemo` / `useCallback` を付けない**（Compiler がビルド時に最適化）。
+  - 計算が重い・参照安定が明示的に必要な場合のみ手書き memo を検討。
+  - 最適化をスキップしたいコンポーネントは `"use no memo"` で opt-out 可能。
+- **確認**: React DevTools で `Memo ✨` バッジ。ESLint は `eslint-plugin-react-hooks` の `recommended-latest` で Rules of React 違反を検出。
+- **pure 関数**: 画面専用ロジックは `-$name/utils/` 等に切り出し、hook は配線に集中（例: `usePokemonDetailPage`）。
+
 ### 一覧のフィルター・ページング (`usePokemonList.ts`)
 - **全件リスト**: `/pokemon?limit=1500` で取得。レスポンスにタイプ情報は含まれない。
 - **タイプフィルター**: `/type/{type}` を `fetchType` で取得し、返却されたポケモン名リストと全件リストを突き合わせる。`typeFilter` が空のときはフェッチしない（`enabled: !!typeFilter`）。

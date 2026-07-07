@@ -1,6 +1,6 @@
 # ポケモン図鑑アプリケーション (Pokédex App)
 
-React + TypeScript + Vite で作成されたモダンなポケモン図鑑アプリケーションです。
+React + TypeScript + Vite で作成されたモダンなポケモン図鑑アプリケーションです。React Compiler（v1.0）によりビルド時に自動メモ化されます。
 
 ## コミット規約
 

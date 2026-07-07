@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const SPRITE_BASE = 'https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/';
 
@@ -17,17 +17,14 @@ interface PokemonSpriteProps {
   loading?: 'lazy' | 'eager';
 }
 
-export function PokemonSprite({
+function PokemonSpriteImage({
   pokemonId,
   alt,
   className,
   loading = 'lazy',
 }: PokemonSpriteProps) {
-  const [src, setSrc] = useState(() => artworkUrl(pokemonId));
-
-  useEffect(() => {
-    setSrc(artworkUrl(pokemonId));
-  }, [pokemonId]);
+  const [useFallback, setUseFallback] = useState(false);
+  const src = useFallback ? fallbackUrl(pokemonId) : artworkUrl(pokemonId);
 
   return (
     <img
@@ -35,9 +32,11 @@ export function PokemonSprite({
       alt={alt}
       className={className}
       loading={loading}
-      onError={() => {
-        setSrc((current) => (current !== fallbackUrl(pokemonId) ? fallbackUrl(pokemonId) : current));
-      }}
+      onError={() => setUseFallback(true)}
     />
   );
+}
+
+export function PokemonSprite(props: PokemonSpriteProps) {
+  return <PokemonSpriteImage key={props.pokemonId} {...props} />;
 }

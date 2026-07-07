@@ -11,7 +11,8 @@
 - **独断の禁止**: 「良かれと思って」の独断による作業開始は厳禁。特に、指摘を受けた直後にそのまま修正に飛びつくのではなく、まずは確認を挟むこと。
 
 ## 技術スタック
-- **Frontend**: React (Functional Components)
+- **Frontend**: React (Functional Components) 19
+- **React Compiler**: ビルド時の自動メモ化（`babel-plugin-react-compiler` + `@rolldown/plugin-babel`）
 - **Tooling**: Vite
 - **Routing**: TanStack Router (SPA mode, Directory-based)
 - **Styling**: Tailwind CSS
@@ -28,8 +29,10 @@
   - `index.tsx`: トップページ (/) - ランディングページ。
   - `pokemon/`: ポケモン図鑑機能のグループ。
     - `index.tsx`: ポケモン一覧 (/pokemon)。
-    - `-$name/`: 詳細画面専用のコンポーネントやフックの置き場。
+    - `-$name/`: 詳細画面専用のコンポーネント・フック・ユーティリティの置き場。
       - `components/`
+      - `hooks/`（例: `usePokemonDetailPage.ts`）
+      - `utils/`（pure 関数。例: `flavorText.ts`, `speciesDisplay.ts`）
     - `$name.tsx`: ポケモン詳細 (/pokemon/:name)。
     - `-index/`: 一覧画面専用のコンポーネントやフックの置き場。
       - `components/`

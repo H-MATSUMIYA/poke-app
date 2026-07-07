@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { fetchPokemonDetail, fetchSpeciesByUrl } from '../../../../api/pokeApi';
@@ -32,28 +32,13 @@ export function usePokemonDetailPage(name: string) {
 
   const [userSelectedVersion, setUserSelectedVersion] = useState<string | null>(null);
 
-  const targetEntries = useMemo(() => {
-    if (!speciesQuery.data) return [];
-    return getTargetFlavorEntries(speciesQuery.data, currentLang);
-  }, [speciesQuery.data, currentLang]);
-
-  const availableVersions = useMemo(
-    () => getAvailableVersions(targetEntries),
-    [targetEntries],
-  );
-
-  const activeVersion = useMemo(
-    () => resolveActiveVersion(availableVersions, userSelectedVersion),
-    [availableVersions, userSelectedVersion],
-  );
-
-  const flavorText = useMemo(
-    () => getFlavorText(targetEntries, activeVersion),
-    [targetEntries, activeVersion],
-  );
-
   const pokemon = pokemonQuery.data;
   const species = speciesQuery.data;
+
+  const targetEntries = species ? getTargetFlavorEntries(species, currentLang) : [];
+  const availableVersions = getAvailableVersions(targetEntries);
+  const activeVersion = resolveActiveVersion(availableVersions, userSelectedVersion);
+  const flavorText = getFlavorText(targetEntries, activeVersion);
 
   return {
     pokemon,

@@ -129,3 +129,16 @@
 - **経緯**: `/pokemon/charizard` 等をリロードすると `/200` へリダイレクトされ NotFound 表示。Worker が `200.html` を取得すると Cloudflare Assets が 307 で `/200` へ飛ばしていた。
 - **理由**: Cloudflare 公式 SPA 設定なら `index.html` を同一 URL で返せる。`/api/*` のみ Worker 優先、それ以外は Assets に委譲。
 - **状態**: ✅ 現行
+
+## 📅 2026-07-07
+
+### ⚛️ React Compiler v1.0 の導入
+- **決定**: `babel-plugin-react-compiler` と `@rolldown/plugin-babel` を devDependency に追加し、`vite.config.ts` で `reactCompilerPreset()` を有効化。
+- **変更内容**:
+  - ESLint を `eslint-plugin-react-hooks` の `recommended-latest` preset に更新（Compiler 最適化不可コードの検出）。
+  - 詳細画面 hook（`usePokemonDetailPage`）から手書き `useMemo` を削除（Compiler が自動メモ化）。
+- **理由**:
+  - React 19 環境で、軽い derived state 向けの手書き `useMemo` を減らし、コードを素直に保つため。
+  - ビルド時にコンポーネント・hook を自動最適化し、将来のパフォーマンス改善を標準化するため。
+- **注意**: ランタイム依存ではなく **ビルド時のみ** 動作。React DevTools の `Memo ✨` バッジで最適化を確認できる。
+- **状態**: ✅ 現行

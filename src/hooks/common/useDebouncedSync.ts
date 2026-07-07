@@ -14,13 +14,14 @@ export function useDebouncedSync<T>(
   delay = 300
 ) {
   const [localValue, setLocalValue] = useState(externalValue);
+  const [prevExternalValue, setPrevExternalValue] = useState(externalValue);
 
-  // 1. プロパティ（URLなど）が外部から変更された場合に同期
-  useEffect(() => {
+  if (externalValue !== prevExternalValue) {
+    setPrevExternalValue(externalValue);
     setLocalValue(externalValue);
-  }, [externalValue]);
+  }
 
-  // 2. デバウンス処理: 入力が止まってから一定時間後に外部の状態を更新
+  // デバウンス処理: 入力が止まってから一定時間後に外部の状態を更新
   useEffect(() => {
     const timer = setTimeout(() => {
       if (localValue !== externalValue) {
