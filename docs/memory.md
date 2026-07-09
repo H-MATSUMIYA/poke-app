@@ -142,3 +142,24 @@
   - ビルド時にコンポーネント・hook を自動最適化し、将来のパフォーマンス改善を標準化するため。
 - **注意**: ランタイム依存ではなく **ビルド時のみ** 動作。React DevTools の `Memo ✨` バッジで最適化を確認できる。
 - **状態**: ✅ 現行
+
+## 📅 2026-07-08
+
+### ✨ 詳細画面への覚え技リスト追加と作品選択の共通化
+- **決定**: 詳細画面に覚え技セクション（`MovesSection`）を追加。図鑑説明用だった作品コンボを `DetailVersionSelect` としてページ共通設定に昇格し、図鑑説明・覚え技の両方が連動するようにした。
+- **変更内容**:
+  - `fetchVersion` / `fetchMove` を `pokeApi.ts` に追加。`PokemonDetail` に `moves` 配列を型追加。
+  - `usePokemonDetailPage` で `activeVersion` → `fetchVersion` → `version_group` を解決し、`getMovesForVersionGroup` で覚え技をフィルタ。
+  - `useMoveDetails` が `useQueries` で技詳細（威力・命中・属性・区分）を取得。`MovesSection` で覚え方ごとにテーブル表示。
+  - `FlavorTextSection` から作品 `<select>` を削除（表示のみ）。
+- **理由**:
+  - PokeAPI の覚え技は `version_group` 単位、図鑑説明は `version` 単位のため、UI は version を維持しつつ技側だけ `fetchVersion` で変換する。
+  - 覚え方（レベルアップ / わざマシン / 教え技 / タマゴ等）はすべて表示。属性タイプとダメージ区分の両方を表示。
+- **v1 の制限**: 技の威力・命中は `/move/{name}` の現在値のみ。世代別 `past_values` は未反映。
+- **状態**: ✅ 現行
+
+### ♻️ Record ルックアップテーブルの命名整理
+- **決定**: プレーンオブジェクト（`Record<string, T>`）の変数名から `Map` サフィックスを廃止し、`xxxByKey` 形式に統一。
+- **変更内容**: `moveMap` → `movesByName`（`useMoveDetails` / `MovesSection`）、`namesMap` → `localizedNamesById`（`usePokemonList.ts`）。
+- **理由**: `Map` は JavaScript の `Map` オブジェクトと紛らわしいため。`groupMovesByLearnMethod` 内の `new Map()` は実際の Map なのでそのまま。
+- **状態**: ✅ 現行

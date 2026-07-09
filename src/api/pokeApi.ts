@@ -1,4 +1,4 @@
-import type { PokemonListResponse, PokemonDetail, GenerationResponse, TypeResponse, PokemonSpecies } from '../types/pokemon';
+import type { PokemonListResponse, PokemonDetail, GenerationResponse, TypeResponse, PokemonSpecies, VersionResponse, MoveDetail } from '../types/pokemon';
 
 const BASE_URL = import.meta.env.PROD 
   ? '/api/v2' 
@@ -25,6 +25,18 @@ export const fetchGeneration = async (idOrName: string | number): Promise<Genera
 export const fetchType = async (type: string): Promise<TypeResponse> => {
   const res = await fetch(`${BASE_URL}/type/${type}`);
   if (!res.ok) throw new Error(`Failed to fetch type ${type}`);
+  return res.json();
+};
+
+export const fetchVersion = async (name: string): Promise<VersionResponse> => {
+  const res = await fetch(`${BASE_URL}/version/${name}`);
+  if (!res.ok) throw new Error(`Failed to fetch version ${name}`);
+  return res.json();
+};
+
+export const fetchMove = async (name: string): Promise<MoveDetail> => {
+  const res = await fetch(`${BASE_URL}/move/${name}`);
+  if (!res.ok) throw new Error(`Failed to fetch move ${name}`);
   return res.json();
 };
 

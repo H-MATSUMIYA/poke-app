@@ -10,6 +10,19 @@
 - `/pokemon-species/[id or name]` エンドポイントで取得できるのは「種族」のデータ（日本語名や説明文など）。
 - 特殊な姿を持つポケモン（ラブトロス、ジガルデなど）は、必ず `species.url` から種族データを取得すること。
 
+### 作品 (version) と version group
+- **図鑑説明** (`species.flavor_text_entries`): キーは `version.name`（例: `sword`, `scarlet`）。
+- **覚え技** (`pokemon.moves[].version_group_details`): キーは `version_group.name`（例: `sword-shield`, `scarlet-violet`）。
+- UI の作品選択は `version` を維持し、技フィルタ用に `fetchVersion(activeVersion)` で `version_group` を解決する。
+- 同一技 slug でも、覚え方（`level-up` / `machine` 等）が複数あると `moveEntries` に複数行できる。詳細取得は技名単位で dedupe する。
+
+### 覚え技と技詳細のデータ源
+| データ | 取得元 | 内容 |
+|--------|--------|------|
+| 覚え技一覧・覚え方・レベル | `fetchPokemonDetail` → `pokemon.moves` | 全世代分が入る。`getMovesForVersionGroup` で絞る |
+| 威力・命中・属性・区分・表示名 | `fetchMove(moveName)` | 技 slug ごとに1回。`/move/{name}` |
+| v1 制限 | — | `past_values` 未使用。威力・命中は API の現在値のみ |
+
 ### スプライト画像と CDN
 - PokeAPI の JSON レスポンスには画像ファイル本体は含まれず、`sprites.other['official-artwork'].front_default` 等に **URL 文字列** が入る。
 - その URL は `raw.githubusercontent.com/PokeAPI/sprites/...`（GitHub raw）を指す。**API の URL をそのまま `<img src>` に使わないこと** — 一覧で同時大量取得すると 429 になりやすい。
@@ -45,11 +58,18 @@
 - **確認**: React DevTools で `Memo ✨` バッジ。ESLint は `eslint-plugin-react-hooks` の `recommended-latest` で Rules of React 違反を検出。
 - **pure 関数**: 画面専用ロジックは `-$name/utils/` 等に切り出し、hook は配線に集中（例: `usePokemonDetailPage`）。
 
+### 詳細画面のデータ取得 (`usePokemonDetailPage` / `useMoveDetails`)
+- **作品選択**: `DetailVersionSelect` が `activeVersion` を管理。図鑑説明（`flavorText.ts`）と覚え技（`moves.ts`）の両方に効く。
+- **覚え技フィルタ**: `fetchVersion` → `version_group` → `getMovesForVersionGroup(pokemon.moves, versionGroup)`。
+- **技詳細**: `useMoveDetails` が `useQueries` で unique な技名ごとに `fetchMove` を並列実行。`queryKey: ['move', moveName]` で全ポケモン横断キャッシュ。
+- **Hooks ルール**: ループ内で `useQuery` は不可。可変件数は `useQueries` を1回呼ぶ。
+- **命名**: 技詳細のルックアップは `movesByName: Record<string, MoveDetail>`。`Map` サフィックスは `new Map()` 用に予約。
+
 ### 一覧のフィルター・ページング (`usePokemonList.ts`)
 - **全件リスト**: `/pokemon?limit=1500` で取得。レスポンスにタイプ情報は含まれない。
 - **タイプフィルター**: `/type/{type}` を `fetchType` で取得し、返却されたポケモン名リストと全件リストを突き合わせる。`typeFilter` が空のときはフェッチしない（`enabled: !!typeFilter`）。
 - **世代フィルター**: `GENERATIONS` の ID 範囲でクライアント側フィルター。
-- **検索**: PokeAPI 公式 CSV（`pokemon_species_names.csv`、jsDelivr 経由）で日本語名マッピングを構築し、英語名・ID・日本語名で絞り込む。
+- **検索**: PokeAPI 公式 CSV（`pokemon_species_names.csv`、jsDelivr 経由）で日本語名マッピングを構築し、英語名・ID・日本語名で絞り込む。マッピング変数は `localizedNamesById`。
 - **ページング**: API の offset ページングではなく、絞り込み済み配列を `useInfiniteQuery` で 48 件ずつ `slice` する（6列レイアウトで8行ちょうど）。無限スクロールの状態管理に React Query を利用している。
 
 ### 無限スクロールのトリガー

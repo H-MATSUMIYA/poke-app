@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { fetchPokemonDetail, fetchSpeciesByUrl } from '../../../../api/pokeApi';
+import { fetchPokemonDetail, fetchSpeciesByUrl, fetchVersion } from '../../../../api/pokeApi';
 import {
   getAvailableVersions,
   getFlavorText,
   getTargetFlavorEntries,
   resolveActiveVersion,
 } from '../utils/flavorText';
+import { getMovesForVersionGroup } from '../utils/moves';
 import {
   getCurrentLang,
   getLocalizedGenus,
@@ -40,6 +41,18 @@ export function usePokemonDetailPage(name: string) {
   const activeVersion = resolveActiveVersion(availableVersions, userSelectedVersion);
   const flavorText = getFlavorText(targetEntries, activeVersion);
 
+  const versionQuery = useQuery({
+    queryKey: ['version', activeVersion],
+    queryFn: () => fetchVersion(activeVersion),
+    enabled: !!activeVersion,
+    staleTime: Infinity,
+  });
+
+  const versionGroup = versionQuery.data?.version_group.name ?? '';
+  const moveEntries = pokemon && versionGroup
+    ? getMovesForVersionGroup(pokemon.moves, versionGroup)
+    : [];
+
   return {
     pokemon,
     species,
@@ -47,11 +60,14 @@ export function usePokemonDetailPage(name: string) {
     localizedName:
       pokemon && species ? getLocalizedName(pokemon, species, currentLang) : '',
     genus: species ? getLocalizedGenus(species, currentLang) : '',
-    flavorTextState: {
+    currentLang,
+    versionState: {
       activeVersion,
       availableVersions,
-      flavorText,
       onVersionChange: setUserSelectedVersion,
     },
+    flavorText,
+    moveEntries,
+    isVersionGroupLoading: versionQuery.isLoading && !!activeVersion,
   };
 }

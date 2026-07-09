@@ -15,6 +15,17 @@ export interface PokemonType {
   type: NamedAPIResource;
 }
 
+export interface PokemonMoveVersionDetail {
+  level_learned_at: number;
+  move_learn_method: NamedAPIResource;
+  version_group: NamedAPIResource;
+}
+
+export interface PokemonMove {
+  move: NamedAPIResource;
+  version_group_details: PokemonMoveVersionDetail[];
+}
+
 export interface PokemonDetail {
   id: number;
   name: string;
@@ -32,6 +43,26 @@ export interface PokemonDetail {
   stats: {
     base_stat: number;
     stat: NamedAPIResource;
+  }[];
+  moves: PokemonMove[];
+}
+
+export interface VersionResponse {
+  id: number;
+  name: string;
+  version_group: NamedAPIResource;
+}
+
+export interface MoveDetail {
+  id: number;
+  name: string;
+  power: number | null;
+  accuracy: number | null;
+  type: NamedAPIResource;
+  damage_class: NamedAPIResource;
+  names: {
+    name: string;
+    language: NamedAPIResource;
   }[];
 }
 

@@ -23,11 +23,21 @@
   },
   "detail": {
     "pokedex_entry": "図鑑説明",
+    "game_version": "作品",
     "physical_traits": "身体的特徴",
     "base_stats": "種族値",
     "height": "高さ",
     "weight": "重さ",
-    "total": "合計"
+    "total": "合計",
+    "moves": "覚える技",
+    "move_name": "技名",
+    "move_element": "属性",
+    "move_category": "区分",
+    "move_power": "威力",
+    "move_accuracy": "命中",
+    "learn_level": "覚える条件",
+    "no_moves": "この作品では覚える技のデータがありません。",
+    "moves_loading": "読み込み中..."
   },
   "stats": {
     "hp": "HP",
@@ -36,6 +46,18 @@
     "special-attack": "とくこう",
     "special-defense": "とくぼう",
     "speed": "すばやさ"
+  },
+  "learn_methods": {
+    "level-up": "レベルアップ",
+    "machine": "わざマシン",
+    "tutor": "教え技",
+    "egg": "タマゴ",
+    "other": "その他"
+  },
+  "damage_class": {
+    "physical": "物理",
+    "special": "特殊",
+    "status": "変化"
   },
   "types": {
     "normal": "ノーマル",

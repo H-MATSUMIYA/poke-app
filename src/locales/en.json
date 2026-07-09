@@ -23,11 +23,21 @@
   },
   "detail": {
     "pokedex_entry": "Pokédex Entry",
+    "game_version": "Game Version",
     "physical_traits": "Physical Traits",
     "base_stats": "Base Stats",
     "height": "Height",
     "weight": "Weight",
-    "total": "Total"
+    "total": "Total",
+    "moves": "Moves",
+    "move_name": "Move",
+    "move_element": "Type",
+    "move_category": "Category",
+    "move_power": "Power",
+    "move_accuracy": "Accuracy",
+    "learn_level": "Learned",
+    "no_moves": "No move data available for this version.",
+    "moves_loading": "Loading moves..."
   },
   "stats": {
     "hp": "HP",
@@ -36,6 +46,18 @@
     "special-attack": "Special Attack",
     "special-defense": "Special Defense",
     "speed": "Speed"
+  },
+  "learn_methods": {
+    "level-up": "Level Up",
+    "machine": "TM/HM",
+    "tutor": "Move Tutor",
+    "egg": "Egg",
+    "other": "Other"
+  },
+  "damage_class": {
+    "physical": "Physical",
+    "special": "Special",
+    "status": "Status"
   },
   "types": {
     "normal": "Normal",

@@ -2,9 +2,11 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { fetchPokemonDetail, fetchSpeciesByUrl } from '../../api/pokeApi';
 import { DetailHero } from './-$name/components/DetailHero';
+import { DetailVersionSelect } from './-$name/components/DetailVersionSelect';
 import { FlavorTextSection } from './-$name/components/FlavorTextSection';
 import { PhysicalTraits } from './-$name/components/PhysicalTraits';
 import { BaseStats } from './-$name/components/BaseStats';
+import { MovesSection } from './-$name/components/MovesSection';
 import { usePokemonDetailPage } from './-$name/hooks/usePokemonDetailPage';
 
 export const Route = createFileRoute('/pokemon/$name')({
@@ -35,7 +37,11 @@ function PokemonDetail() {
     isLoading,
     localizedName,
     genus,
-    flavorTextState,
+    currentLang,
+    versionState,
+    flavorText,
+    moveEntries,
+    isVersionGroupLoading,
   } = usePokemonDetailPage(name);
 
   if (isLoading) {
@@ -79,12 +85,19 @@ function PokemonDetail() {
         />
 
         <div className="p-8 md:p-16 bg-white dark:bg-slate-800">
-          <FlavorTextSection {...flavorTextState} />
+          <DetailVersionSelect {...versionState} />
+          <FlavorTextSection flavorText={flavorText} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12">
             <PhysicalTraits height={pokemon.height} weight={pokemon.weight} />
             <BaseStats stats={pokemon.stats} />
           </div>
+
+          <MovesSection
+            moveEntries={moveEntries}
+            currentLang={currentLang}
+            isVersionGroupLoading={isVersionGroupLoading}
+          />
         </div>
       </div>
     </div>

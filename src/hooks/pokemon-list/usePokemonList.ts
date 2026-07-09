@@ -92,7 +92,7 @@ export const useFilteredPokemonList = (searchTarget: string, typeFilter: string,
     // 3. 検索キーワード適用（日本語・英語・ID）
     if (searchTarget) {
       const lowerSearch = searchTarget.toLowerCase();
-      const namesMap = localizedNamesQuery.data;
+      const localizedNamesById = localizedNamesQuery.data;
 
       list = list.filter(p => {
         const id = extractIdFromUrl(p.url);
@@ -101,8 +101,8 @@ export const useFilteredPokemonList = (searchTarget: string, typeFilter: string,
 
         // 日本語名のチェック
         let jaMatch = false;
-        if (namesMap && namesMap[id]) {
-          jaMatch = namesMap[id].ja.includes(searchTarget);
+        if (localizedNamesById && localizedNamesById[id]) {
+          jaMatch = localizedNamesById[id].ja.includes(searchTarget);
         }
 
         return nameMatch || idMatch || jaMatch;
