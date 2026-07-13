@@ -1,4 +1,4 @@
-import type { PokemonDetail, PokemonSpecies } from '../../../../types/pokemon';
+import type { PokemonDetail, PokemonSpecies } from '../../types/pokemon';
 
 export function getCurrentLang(language: string): 'ja' | 'en' {
   return language.startsWith('ja') ? 'ja' : 'en';

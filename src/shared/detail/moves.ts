@@ -1,4 +1,4 @@
-import type { MoveDetail, PokemonMove } from '../../../../types/pokemon';
+import type { MoveDetail, PokemonMove } from '../../types/pokemon';
 
 export interface MoveEntry {
   moveName: string;

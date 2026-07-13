@@ -1,31 +1,19 @@
 import { useTranslation } from 'react-i18next';
-import type { MoveDetail } from '../../../../types/pokemon';
-import { useMoveDetails } from '../hooks/useMoveDetails';
-import {
-  formatStat,
-  getLearnMethodGroupKey,
-  getLocalizedMoveName,
-  groupMovesByLearnMethod,
-  type MoveEntry,
-} from '../utils/moves';
+import type { PokemonDetailMoveGroupView } from '../../../../types/views/pokemonDetail';
+import { formatStat, getLearnMethodGroupKey } from '../../../../shared/detail/moves';
 
 interface MovesSectionProps {
-  moveEntries: MoveEntry[];
-  currentLang: 'ja' | 'en';
-  isVersionGroupLoading: boolean;
+  moveGroups: PokemonDetailMoveGroupView[];
+  isLoading: boolean;
 }
 
 export const MovesSection = ({
-  moveEntries,
-  currentLang,
-  isVersionGroupLoading,
+  moveGroups,
+  isLoading,
 }: MovesSectionProps) => {
   const { t } = useTranslation();
-  const moveNames = moveEntries.map((e) => e.moveName);
-  const { movesByName, isLoading: isMovesLoading } = useMoveDetails(moveNames);
-  const groupedMoves = groupMovesByLearnMethod(moveEntries);
 
-  const isLoading = isVersionGroupLoading || isMovesLoading;
+  const totalMoves = moveGroups.reduce((sum, g) => sum + g.moves.length, 0);
 
   return (
     <div className="mt-12">
@@ -39,22 +27,16 @@ export const MovesSection = ({
         </div>
       )}
 
-      {!isLoading && moveEntries.length === 0 && (
+      {!isLoading && totalMoves === 0 && (
         <p className="text-slate-500 dark:text-slate-400 text-center py-8">
           {t('detail.no_moves')}
         </p>
       )}
 
-      {!isLoading && groupedMoves.length > 0 && (
+      {!isLoading && moveGroups.length > 0 && (
         <div className="space-y-8">
-          {groupedMoves.map((group) => (
-            <MoveGroupTable
-              key={group.learnMethod}
-              learnMethod={group.learnMethod}
-              entries={group.entries}
-              movesByName={movesByName}
-              currentLang={currentLang}
-            />
+          {moveGroups.map((group) => (
+            <MoveGroupTable key={group.learnMethod} group={group} />
           ))}
         </div>
       )}
@@ -63,25 +45,17 @@ export const MovesSection = ({
 };
 
 interface MoveGroupTableProps {
-  learnMethod: string;
-  entries: MoveEntry[];
-  movesByName: Record<string, MoveDetail>;
-  currentLang: 'ja' | 'en';
+  group: PokemonDetailMoveGroupView;
 }
 
-const MoveGroupTable = ({
-  learnMethod,
-  entries,
-  movesByName,
-  currentLang,
-}: MoveGroupTableProps) => {
+const MoveGroupTable = ({ group }: MoveGroupTableProps) => {
   const { t } = useTranslation();
-  const groupKey = getLearnMethodGroupKey(learnMethod);
+  const groupKey = getLearnMethodGroupKey(group.learnMethod);
 
   return (
     <div className="bg-slate-50 dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700/50 overflow-x-auto">
       <h4 className="text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
-        {t(`learn_methods.${groupKey}`, learnMethod.replace('-', ' '))}
+        {t(`learn_methods.${groupKey}`, group.learnMethod.replace('-', ' '))}
       </h4>
       <table className="w-full text-sm">
         <thead>
@@ -107,40 +81,35 @@ const MoveGroupTable = ({
           </tr>
         </thead>
         <tbody>
-          {entries.map((entry, idx) => {
-            const move = movesByName[entry.moveName];
-            return (
-              <tr
-                key={`${entry.moveName}-${entry.learnMethod}-${entry.levelLearnedAt}-${idx}`}
-                className="border-b border-slate-100 dark:border-slate-800 last:border-0"
-              >
-                <td className="py-3 pr-4 font-bold text-slate-800 dark:text-slate-200">
-                  {move ? getLocalizedMoveName(move, currentLang) : entry.moveName}
-                </td>
-                <td className="py-3 pr-4 text-slate-600 dark:text-slate-300">
-                  {move
-                    ? t(`types.${move.type.name}`, move.type.name)
-                    : '—'}
-                </td>
-                <td className="py-3 pr-4 text-slate-600 dark:text-slate-300">
-                  {move
-                    ? t(`damage_class.${move.damage_class.name}`, move.damage_class.name)
-                    : '—'}
-                </td>
-                <td className="py-3 pr-4 text-right font-mono font-bold text-slate-700 dark:text-slate-200">
-                  {move ? formatStat(move.power) : '—'}
-                </td>
-                <td className="py-3 pr-4 text-right font-mono font-bold text-slate-700 dark:text-slate-200">
-                  {move ? formatStat(move.accuracy) : '—'}
-                </td>
-                <td className="py-3 text-right font-mono font-bold text-slate-700 dark:text-slate-200">
-                  {entry.learnMethod === 'level-up' && entry.levelLearnedAt > 0
-                    ? `Lv.${entry.levelLearnedAt}`
-                    : '—'}
-                </td>
-              </tr>
-            );
-          })}
+          {group.moves.map((move, idx) => (
+            <tr
+              key={`${move.slug}-${group.learnMethod}-${move.levelLearnedAt}-${idx}`}
+              className="border-b border-slate-100 dark:border-slate-800 last:border-0"
+            >
+              <td className="py-3 pr-4 font-bold text-slate-800 dark:text-slate-200">
+                {move.displayName}
+              </td>
+              <td className="py-3 pr-4 text-slate-600 dark:text-slate-300">
+                {move.type ? t(`types.${move.type}`, move.type) : '—'}
+              </td>
+              <td className="py-3 pr-4 text-slate-600 dark:text-slate-300">
+                {move.damageClass
+                  ? t(`damage_class.${move.damageClass}`, move.damageClass)
+                  : '—'}
+              </td>
+              <td className="py-3 pr-4 text-right font-mono font-bold text-slate-700 dark:text-slate-200">
+                {formatStat(move.power)}
+              </td>
+              <td className="py-3 pr-4 text-right font-mono font-bold text-slate-700 dark:text-slate-200">
+                {formatStat(move.accuracy)}
+              </td>
+              <td className="py-3 text-right font-mono font-bold text-slate-700 dark:text-slate-200">
+                {group.learnMethod === 'level-up' && move.levelLearnedAt > 0
+                  ? `Lv.${move.levelLearnedAt}`
+                  : '—'}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

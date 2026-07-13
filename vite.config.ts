@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { promises as fs } from 'fs'
 import { join } from 'path'
+import { viteBffPlugin } from './vite-plugin-bff'
 
 // Cloudflare PagesのSPAルーティング用フォールバックファイル(200.html)を作成するプラグイン
 const copyIndexTo200 = () => {
@@ -33,7 +34,8 @@ export default defineConfig({
       presets: [reactCompilerPreset()],
     }),
     tailwindcss(),
-    copyIndexTo200()
+    copyIndexTo200(),
+    viteBffPlugin(),
   ],
 })
 

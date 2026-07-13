@@ -1,4 +1,4 @@
-import type { FlavorTextEntry, PokemonSpecies } from '../../../../types/pokemon';
+import type { FlavorTextEntry, PokemonSpecies } from '../../types/pokemon';
 
 export function getTargetFlavorEntries(
   species: PokemonSpecies,

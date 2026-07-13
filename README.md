@@ -17,10 +17,17 @@ npm install
 
 ### 開発サーバー（通常）
 
-UI やフィルターなどの日常開発向け。Vite のみ起動し、PokeAPI には直接アクセスします。
+`npm run dev` で Vite を起動します。詳細画面の BFF（`/api/ui/*`）は **Vite 内蔵ミドルウェア**で処理されるため、Worker を別途起動する必要はありません。
 
 ```bash
 npm run dev
+```
+
+Worker 込みの本番同等確認が必要な場合:
+
+```bash
+npm run build
+npm run dev:full   # Worker + Vite 同時起動
 ```
 
 ### 本番同等の確認（Cloudflare Workers）
@@ -35,7 +42,9 @@ npm run preview:worker
 
 | コマンド | 用途 |
 |---|---|
-| `npm run dev` | 通常開発（Vite、PokeAPI 直叩き） |
+| `npm run dev` | 通常開発（Vite + 内蔵 BFF ミドルウェア） |
+| `npm run dev:full` | Worker + Vite 同時起動（本番同等） |
+| `npm run dev:vite` | Vite のみ（`dev` と同じ） |
 | `npm run preview:worker` | ビルド + Workers ローカル起動 |
 | `npm run dev:worker` | Workers ローカル起動のみ（要 `dist`） |
 

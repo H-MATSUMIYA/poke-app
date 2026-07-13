@@ -20,7 +20,8 @@
 - **Validation**: Zod (スキーマ定義/型推論)
 - **I18n**: react-i18next (日本語/英語)
 - **Hosting / Edge**: Cloudflare Workers (Wrangler)
-- **API Proxy**: 本番環境では `/api/*` → PokeAPI（Workers 上でキャッシュ）
+- **API Proxy**: 本番環境では `/api/v2/*` → PokeAPI（Workers 上でキャッシュ）
+- **BFF**: 詳細画面は `/api/ui/pokemon/:name`（Workers 上で成型済み JSON を返す）
 
 ## ディレクトリ構造 (TanStack Router 準拠)
 - `docs/`: エージェント向けドキュメント（`agent.md`, `memory.md`, `skills.md`）
@@ -29,11 +30,9 @@
   - `index.tsx`: トップページ (/) - ランディングページ。
   - `pokemon/`: ポケモン図鑑機能のグループ。
     - `index.tsx`: ポケモン一覧 (/pokemon)。
-    - `-$name/`: 詳細画面専用のコンポーネント・フック・ユーティリティの置き場。
+    - `-$name/`: 詳細画面専用のコンポーネントの置き場。
       - `components/`（例: `DetailVersionSelect.tsx`, `MovesSection.tsx`, `FlavorTextSection.tsx`）
-      - `hooks/`（例: `usePokemonDetailPage.ts`, `useMoveDetails.ts`）
-      - `utils/`（pure 関数。例: `flavorText.ts`, `speciesDisplay.ts`, `moves.ts`）
-    - `$name.tsx`: ポケモン詳細 (/pokemon/:name)。
+    - `$name.tsx`: ポケモン詳細 (/pokemon/:name)。loader + `useQuery` で BFF データを取得。
     - `-index/`: 一覧画面専用のコンポーネントやフックの置き場。
       - `components/`
 - `src/components/`: アプリ全体で共有するUIパーツ。
@@ -41,12 +40,15 @@
 - `src/hooks/`: アプリ全体で共有するロジック。
   - `common/`
   - `pokemon-list/`
-- `src/api/`: APIクライアント。
-- `src/types/`: 共通型定義。
+- `src/api/`: APIクライアント（`pokeApi.ts` 一覧用、`bffApi.ts` 詳細 BFF 用）。
+- `src/types/`: 共通型定義（`views/` に BFF レスポンス型）。
+- `src/shared/`: FE/Worker 共有の pure 関数（`detail/` に図鑑説明・覚え技ロジック）。
+- `src/bff/`: Worker 内 BFF（ハンドラ・マッパー・PokeAPI クライアント）。
+- `src/worker/`: Worker 補助モジュール（プロキシ・キャッシュ）。
 - `src/utils/`: 共通ユーティリティ。
 - `src/i18n/`: i18next 設定。
 - `src/locales/`: 翻訳 JSON（`ja.json`, `en.json`）。
-- `src/worker.ts`: Cloudflare Workers エントリ（PokeAPI プロキシ＆静的アセット配信）。
+- `src/worker.ts`: Cloudflare Workers エントリ（BFF ルーター + PokeAPI プロキシ + 静的アセット委譲）。
 - `wrangler.jsonc`: Wrangler 設定（`dist` をアセット、`src/worker.ts` を main）。
 
 ## コミットメッセージ

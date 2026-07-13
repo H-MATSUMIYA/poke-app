@@ -162,4 +162,24 @@
 - **決定**: プレーンオブジェクト（`Record<string, T>`）の変数名から `Map` サフィックスを廃止し、`xxxByKey` 形式に統一。
 - **変更内容**: `moveMap` → `movesByName`（`useMoveDetails` / `MovesSection`）、`namesMap` → `localizedNamesById`（`usePokemonList.ts`）。
 - **理由**: `Map` は JavaScript の `Map` オブジェクトと紛らわしいため。`groupMovesByLearnMethod` 内の `new Map()` は実際の Map なのでそのまま。
+- **状態**: ✅ 現行（詳細画面の技詳細取得は 2026-07-09 BFF 移行により `useMoveDetails` は削除）
+
+## 📅 2026-07-09
+
+### ✨ 詳細画面 BFF 導入（`/api/ui/pokemon/:name`）
+- **決定**: 詳細画面のデータ取得・成型を Cloudflare Worker の BFF に移行。一覧・`PokemonCard` は従来どおり `/api/v2` プロキシ（または dev 直叩き）を維持。
+- **変更内容**:
+  - Worker ルーター: `/api/ui/*` → BFF、`/api/v2/*` → PokeAPI プロキシ、`/*` → 静的 Assets。
+  - `GET /api/ui/pokemon/:name?lang=ja|en&version=` が `PokemonDetailView`（表示用 JSON）を返す。
+  - 成型ロジック（図鑑説明・覚え技・ローカライズ）を `src/bff/` に集約。pure 関数は `src/shared/detail/` を FE/Worker で共有。
+  - FE: `usePokemonDetailPage` が `fetchPokemonDetailView` の 1 クエリに簡素化。`useMoveDetails` 削除。
+- **理由**:
+  - PokeAPI 生 JSON と複数リクエストの複雑さを FE から排除し、詳細画面を 1 リクエストで描画可能にする。
+  - プロキシと BFF を併存させ、効果の大きい詳細画面から段階的に移行する。
+- **v1 の制限**: 技の威力・命中は `past_values` 未反映（従来どおり）。
+- **状態**: ✅ 現行
+
+### ♻️ 詳細画面 hook の `$name.tsx` への統合
+- **決定**: BFF 化後に薄くなった `usePokemonDetailPage` を削除。`$name.tsx` に `useQuery` + 作品選択 state を直書き。
+- **理由**: hook の責務が配線のみになり、1ファイルにまとめた方が追いやすい。
 - **状態**: ✅ 現行

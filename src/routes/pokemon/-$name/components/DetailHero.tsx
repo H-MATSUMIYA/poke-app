@@ -6,7 +6,7 @@ interface DetailHeroProps {
   id: number;
   localizedName: string;
   genus: string;
-  types: Array<{ type: { name: string } }>;
+  types: string[];
 }
 
 export const DetailHero = ({ id, localizedName, genus, types }: DetailHeroProps) => {
@@ -47,12 +47,12 @@ export const DetailHero = ({ id, localizedName, genus, types }: DetailHeroProps)
         </p>
 
         <div className="flex gap-3">
-          {types.map((t_info) => (
+          {types.map((typeName) => (
             <span 
-              key={t_info.type.name} 
-              className={`px-6 py-2.5 rounded-full text-sm font-black uppercase tracking-widest shadow-md ${getTypeColor(t_info.type.name)}`}
+              key={typeName} 
+              className={`px-6 py-2.5 rounded-full text-sm font-black uppercase tracking-widest shadow-md ${getTypeColor(typeName)}`}
             >
-              {t(`types.${t_info.type.name}`)}
+              {t(`types.${typeName}`)}
             </span>
           ))}
         </div>

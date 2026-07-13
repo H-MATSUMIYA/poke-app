@@ -1,25 +1,25 @@
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import { fetchPokemonDetail, fetchSpeciesByUrl } from '../../api/pokeApi';
+import { fetchPokemonDetailView } from '../../api/bffApi';
+import { getCurrentLang } from '../../shared/detail/speciesDisplay';
 import { DetailHero } from './-$name/components/DetailHero';
 import { DetailVersionSelect } from './-$name/components/DetailVersionSelect';
 import { FlavorTextSection } from './-$name/components/FlavorTextSection';
 import { PhysicalTraits } from './-$name/components/PhysicalTraits';
 import { BaseStats } from './-$name/components/BaseStats';
 import { MovesSection } from './-$name/components/MovesSection';
-import { usePokemonDetailPage } from './-$name/hooks/usePokemonDetailPage';
 
 export const Route = createFileRoute('/pokemon/$name')({
   component: PokemonDetail,
   loader: async ({ context: { queryClient }, params: { name } }) => {
-    const pokemon = await queryClient.ensureQueryData({
-      queryKey: ['pokemon', name],
-      queryFn: () => fetchPokemonDetail(name),
-    });
+    const lang =
+      typeof navigator !== 'undefined' ? getCurrentLang(navigator.language) : 'en';
 
     await queryClient.ensureQueryData({
-      queryKey: ['species', pokemon.species.url],
-      queryFn: () => fetchSpeciesByUrl(pokemon.species.url),
+      queryKey: ['pokemonDetailView', name, lang, null],
+      queryFn: () => fetchPokemonDetailView(name, { lang, version: null }),
     });
 
     return { name };
@@ -29,20 +29,19 @@ export const Route = createFileRoute('/pokemon/$name')({
 function PokemonDetail() {
   const { name } = Route.useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = getCurrentLang(i18n.language);
+  const [userSelectedVersion, setUserSelectedVersion] = useState<string | null>(null);
 
-  const {
-    pokemon,
-    species,
-    isLoading,
-    localizedName,
-    genus,
-    currentLang,
-    versionState,
-    flavorText,
-    moveEntries,
-    isVersionGroupLoading,
-  } = usePokemonDetailPage(name);
+  const { data: view, isLoading } = useQuery({
+    queryKey: ['pokemonDetailView', name, currentLang, userSelectedVersion],
+    queryFn: () =>
+      fetchPokemonDetailView(name, {
+        lang: currentLang,
+        version: userSelectedVersion,
+      }),
+    enabled: !!name,
+  });
 
   if (isLoading) {
     return (
@@ -52,7 +51,7 @@ function PokemonDetail() {
     );
   }
 
-  if (!pokemon || !species) {
+  if (!view) {
     return (
       <div className="text-center py-20">
         <p className="text-red-500 text-xl font-bold mb-4">{t('common.no_pokemon')}</p>
@@ -78,26 +77,26 @@ function PokemonDetail() {
 
       <div className="bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700/60">
         <DetailHero
-          id={pokemon.id}
-          localizedName={localizedName}
-          genus={genus}
-          types={pokemon.types}
+          id={view.id}
+          localizedName={view.localizedName}
+          genus={view.genus}
+          types={view.types}
         />
 
         <div className="p-8 md:p-16 bg-white dark:bg-slate-800">
-          <DetailVersionSelect {...versionState} />
-          <FlavorTextSection flavorText={flavorText} />
+          <DetailVersionSelect
+            activeVersion={view.activeVersion}
+            availableVersions={view.availableVersions}
+            onVersionChange={setUserSelectedVersion}
+          />
+          <FlavorTextSection flavorText={view.flavorText} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12">
-            <PhysicalTraits height={pokemon.height} weight={pokemon.weight} />
-            <BaseStats stats={pokemon.stats} />
+            <PhysicalTraits height={view.height} weight={view.weight} />
+            <BaseStats stats={view.stats} />
           </div>
 
-          <MovesSection
-            moveEntries={moveEntries}
-            currentLang={currentLang}
-            isVersionGroupLoading={isVersionGroupLoading}
-          />
+          <MovesSection moveGroups={view.moveGroups} isLoading={isLoading} />
         </div>
       </div>
     </div>
